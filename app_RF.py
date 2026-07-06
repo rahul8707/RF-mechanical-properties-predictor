@@ -2,60 +2,43 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# -----------------------------
-# Load trained model
-# -----------------------------
+# Load model
 model = joblib.load("random_forest_model.pkl")
 
-st.title("Soft Tissue Mechanical Property Prediction")
-st.write("Predict mechanical property value in MPa using a Random Forest model.")
+st.set_page_config(page_title="Mechanical Property Prediction")
 
-# -----------------------------
-# Input fields
-# -----------------------------
-st.sidebar.header("Enter input features")
+st.title("Mechanical Property Prediction")
+st.write("Predict Young's modulus / mechanical property (MPa).")
 
-# Example input fields
-architecture = st.sidebar.selectbox(
-    "Architecture",
-    ["Grid", "Mesh", "Honeycomb", "Lattice", "Gyroid", "Bulk", "Unknown"]
-)
+# -----------------------------------
+# IMPORTANT:
+# Replace these with YOUR feature names
+# -----------------------------------
+feature_names = [
+    'architecture','pore_mean_um', 'PEGDA', 'Gellan Gum', 'Gelatin', 'GelMA', 'PCL', 'Alginate', 'Chitosan', 'HAMA', 'HA', 'Collagen', 'Hydroxyapatite', 'Agarose', 'PEG', 'Matrigel', 'bioink', 'dECM', 'fibrin', 'Fibrinogen', 'PLGA', 'PLCL', 'Beta Tricalcium Phosphate', 'PVA', 'Kappa Carrageenan', 'Nanosilicates', 'Xanthan Gum', 'GAG', 'Laponite', 'Methylcellulose', 'Transglutaminase', 'PEG-NIPAAm-HPMACys', 'HA Phenolic Hydroxyl Functionalized', 'Icariin', 'Silk Fibroin', 'Cellulose'
+]
 
-GelMA = st.sidebar.number_input("GelMA (%)", min_value=0.0, max_value=100.0, value=0.0)
-Alginate = st.sidebar.number_input("Alginate (%)", min_value=0.0, max_value=100.0, value=0.0)
-Collagen = st.sidebar.number_input("Collagen (%)", min_value=0.0, max_value=100.0, value=0.0)
-PEG = st.sidebar.number_input("PEG (%)", min_value=0.0, max_value=100.0, value=0.0)
-HA = st.sidebar.number_input("HA (%)", min_value=0.0, max_value=100.0, value=0.0)
+inputs = {}
 
-# Add other features if your model used them
-pore_size_um = st.sidebar.number_input("Pore size (µm)", value=0.0)
-fiber_diameter_um = st.sidebar.number_input("Fiber diameter (µm)", value=0.0)
-printing_pressure_kpa = st.sidebar.number_input("Printing pressure (kPa)", value=0.0)
-printing_speed_mm_s = st.sidebar.number_input("Printing speed (mm/s)", value=0.0)
+for feature in feature_names:
 
-# -----------------------------
-# Create input dataframe
-# -----------------------------
-input_data = pd.DataFrame({
-    "architecture": [architecture],
-    "GelMA": [GelMA],
-    "Alginate": [Alginate],
-    "Collagen": [Collagen],
-    "PEG": [PEG],
-    "HA": [HA],
-    "pore_size_um": [pore_size_um],
-    "fiber_diameter_um": [fiber_diameter_um],
-    "printing_pressure_kpa": [printing_pressure_kpa],
-    "printing_speed_mm_s": [printing_speed_mm_s],
-})
+    if feature == "architecture":
+        inputs[feature] = st.selectbox(
+            feature,
+            ["Grid", "Mesh", "Honeycomb", "Gyroid", "Bulk", "Lattice", "Unknown"]
+        )
+    else:
+        inputs[feature] = st.number_input(
+            feature,
+            min_value=0.0,
+            value=0.0,
+            step=0.1
+        )
 
-st.subheader("Input Data")
-st.dataframe(input_data)
+X = pd.DataFrame([inputs])
 
-# -----------------------------
-# Prediction
-# -----------------------------
 if st.button("Predict"):
-    prediction = model.predict(input_data)
 
-    st.success(f"Predicted value: {prediction[0]:.4f} MPa")
+    prediction = model.predict(X)
+
+    st.success(f"Predicted value = {prediction[0]:.3f} MPa")
