@@ -14,7 +14,7 @@ st.write("Predict mechanical property value in MPa using a Random Forest model."
 # -----------------------------
 # Load model
 # -----------------------------
-MODEL_PATH = Path(__file__).parent / "random_forest_model.pkl"
+MODEL_PATH = Path(__file__).parent / "random_forest_pipeline.pkl"
 
 if not MODEL_PATH.exists():
     st.error("Model file not found. Please upload random_forest_model.pkl to the same folder as app_RF.py.")
