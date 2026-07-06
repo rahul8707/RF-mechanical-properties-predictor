@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load model
-model = joblib.load("random_forest_model.pkl")
+model = joblib.load("random_forest_pipeline.pkl")
 
 st.set_page_config(page_title="Mechanical Property Prediction")
 
